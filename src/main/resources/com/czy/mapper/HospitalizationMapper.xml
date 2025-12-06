@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czy.mapper.HospitalizationMapper">
+
+    <select id="selectByPatientId" parameterType="int" resultType="com.czy.pojo.Hospitalization">
+        SELECT
+            hospitalization_id   AS hospitalizationId,
+            patient_id           AS patientId,
+            room_number          AS roomNumber,
+            cost                 AS cost,
+            payment_status       AS paymentStatus,
+            is_insured           AS isInsured,
+            hospitalization_status AS hospitalizationStatus
+        FROM hospitalization
+        WHERE patient_id = #{patientId}
+        ORDER BY hospitalization_id ASC
+    </select>
+
+    <select id="selectById" parameterType="int" resultType="com.czy.pojo.Hospitalization">
+        SELECT
+            hospitalization_id   AS hospitalizationId,
+            cost                 AS cost
+        FROM hospitalization
+        WHERE hospitalization_id = #{hospitalizationId}
+    </select>
+
+    <update id="markPaid" parameterType="int">
+        UPDATE hospitalization
+        SET payment_status = 'paid'
+        WHERE hospitalization_id = #{hospitalizationId}
+    </update>
+
+</mapper>

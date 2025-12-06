@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.czy.mapper.DoctorsMapper">
+
+    <!--resultMap:定义结果集映射-->
+    <resultMap id="doctorMap" type="com.czy.pojo.Doctors" autoMapping="true">
+        <!--关联科室信息-->
+        <association property="departments" javaType="com.czy.pojo.Departments" autoMapping="true"/>
+        <!--关联职称信息-->
+        <association property="titles" javaType="com.czy.pojo.ProfessionalTitles" autoMapping="true"/>
+    </resultMap>
+
+    <!--多条件查询医生信息
+        科室ID，职称ID，医生姓名，工号
+        使用动态SQL添加条件
+    -->
+    <select id="selectDoctorAll" resultMap="doctorMap">
+        select d.*,dt.*,pt.*
+        from doctors d
+            left join departments dt on d.department_id = dt.department_id
+            left join professional_titles pt on d.professional_title_id = pt.id
+        <where>
+            <if test="departmentId!=null">
+                d.department_id =#{departmentId}
+            </if>
+            <if test="titleId!=null">
+                and d.professional_title_id =#{titleId}
+            </if>
+            <if test="doctorName!=null">
+                and d.name like concat('%',#{doctorName},'%')
+            </if>
+            <if test="jobNumber!=null">
+                and d.job_number like concat('%',#{jobNumber},'%')
+            </if>
+        </where>
+        order by d.doctor_id
+    </select>
+
+    <select id="AllDoctorNames" resultType="com.czy.pojo.Doctors">
+        -- 去掉 WHERE 条件，直接查询所有医生（排除过滤错误）
+        SELECT
+            name ,doctor_id                  -- 映射到 Doctors 的 name
+        FROM doctors
+        ORDER BY doctor_id ASC
+    </select>
+
+</mapper>

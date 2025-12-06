@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.czy.mapper.ProfessionalTitlesMapper">
+
+    <!--查询所有职称的信息-->
+    <select id="selectAll" resultType="com.czy.pojo.ProfessionalTitles">
+        select * from professional_titles
+    </select>
+
+    <!--添加新职称
+        添加时方法参数为职称对象因此参数占位符名必须和属性相同
+        keyProperty:表示自增主值返回给实体类中对应的属性名
+        useGeneratedKeys="true":表示是否返回给实体类中对应的属性名
+    -->
+    <insert id="addTitle" keyProperty="id" useGeneratedKeys="true">
+        insert into professional_titles(title_name,description)
+        values(#{titleName},#{description})
+    </insert>
+
+    <!--通过ID查询对应职称的信息-->
+    <select id="selectTitlesById" resultType="com.czy.pojo.ProfessionalTitles">
+        select * from professional_titles
+        where id = #{id}
+    </select>
+
+    <!--修改职称信息-->
+    <update id="updateTitlesById">
+        update professional_titles set
+            title_name=#{titleName},
+            description=#{description}
+        where id = #{id}
+    </update>
+
+    <!--删除职称信息-->
+    <delete id="delTitlesById">
+        delete from professional_titles where id = #{id}
+    </delete>
+
+    <!--通过Name查询对应职称的信息-->
+    <select id="selectTitlesByName" resultType="com.czy.pojo.ProfessionalTitles">
+        select * from professional_titles
+        where title_name=#{titleName}
+    </select>
+
+    <select id="selectDoctorsByTitleId" resultType="com.czy.pojo.Doctors">
+        SELECT * FROM doctors WHERE professional_title_id = #{titleId}
+    </select>
+
+</mapper>

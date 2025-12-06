@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czy.mapper.AnnouncementMapper">
+
+    <!--查询所有公告的信息-->
+    <select id="selectAll" resultType="com.czy.pojo.Announcement">
+        select * from announcement
+    </select>
+
+    <!--添加新公告
+        添加时方法参数为公告对象因此参数占位符名必须和属性相同
+        keyProperty:表示自增主值返回给实体类中对应的属性名
+        useGeneratedKeys="true":表示是否返回给实体类中对应的属性名
+    -->
+    <insert id="addAnnouncement" keyProperty="announcementId" useGeneratedKeys="true">
+        insert into announcement(title, imgurl, content, creation_time, creator)
+        values(#{title}, #{imgurl}, #{content}, #{creationTime}, #{creator})
+    </insert>
+
+    <!--通过ID查询对应公告的信息-->
+    <select id="selectAnnouncementById" resultType="com.czy.pojo.Announcement">
+        select * from announcement
+        where announcement_id = #{id}
+    </select>
+
+    <!--修改公告信息-->
+    <update id="updateAnnouncementById">
+        update announcement set
+                                title=#{title},
+                                imgurl=#{imgurl},
+                                content=#{content},
+                                creation_time=#{creationTime},
+                                creator=#{creator}
+        where announcement_id = #{announcementId}
+    </update>
+
+    <!--删除公告信息-->
+    <delete id="delAnnouncementById">
+        delete from announcement where announcement_id = #{id}
+    </delete>
+
+</mapper>

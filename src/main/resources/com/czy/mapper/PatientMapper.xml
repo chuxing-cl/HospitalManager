@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czy.mapper.PatientMapper">
+
+    <!-- 根据身份证号（username）查询患者信息 -->
+    <select id="selectByUsername"
+            parameterType="string"
+            resultType="com.czy.pojo.Patient">
+        SELECT
+        patient_id        AS patientId,
+        id_card_number    AS idCardNumber,
+        password,
+        pname,
+        avatar,
+        phone,
+        email,
+        balance
+        FROM patients
+        WHERE id_card_number = #{username}
+    </select>
+
+    <!-- 根据患者主键 ID 查询患者信息 -->
+    <select id="selectById"
+            parameterType="int"
+            resultType="com.czy.pojo.Patient">
+        SELECT
+        patient_id        AS patientId,
+        id_card_number    AS idCardNumber,
+        password,
+        pname,
+        avatar,
+        phone,
+        email,
+        balance
+        FROM patients
+        WHERE patient_id = #{patientId}
+    </select>
+
+    <!-- 更新患者信息 -->
+    <update id="update"
+            parameterType="com.czy.pojo.Patient">
+        UPDATE patients
+        SET password       = #{password},
+        pname          = #{pname},
+        avatar         = #{avatar},
+        phone          = #{phone},
+        email          = #{email},
+        balance        = #{balance}
+        WHERE patient_id    = #{patientId}
+    </update>
+    <update id="deductBalance" parameterType="map">
+        UPDATE patients
+        SET balance = balance - #{amount}
+        WHERE patient_id = #{patientId}
+        AND balance >= #{amount}
+    </update>
+    <!-- 插入新患者，balance 默认为 0 -->
+    <insert id="insert" parameterType="com.czy.pojo.Patient" useGeneratedKeys="true" keyProperty="patientId">
+        INSERT INTO patients(id_card_number, password, pname, avatar, phone, email, balance)
+        VALUES(#{idCardNumber}, #{password}, #{pname}, NULL, NULL, NULL, 0)
+    </insert>
+
+</mapper>

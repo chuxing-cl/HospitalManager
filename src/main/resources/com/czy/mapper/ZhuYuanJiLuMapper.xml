@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.czy.mapper.ZhuYuanJiLuMapper">
+
+    <!--resultMap:定义结果集映射-->
+    <resultMap id="zhuyuanMap" type="com.czy.pojo.Hospitalization" autoMapping="true">
+        <association property="patient" javaType="com.czy.pojo.Patient" autoMapping="true"/>
+    </resultMap>
+
+    <select id="selectZhuYuanJiLu" resultMap="zhuyuanMap">
+        select hos.*,pa.*
+        from hospitalization hos
+             left join patients pa on hos.patient_id = pa.patient_id
+        order by hos.hospitalization_id
+    </select>
+
+    <delete id="delZY">
+        delete from hospitalization
+    </delete>
+
+</mapper>

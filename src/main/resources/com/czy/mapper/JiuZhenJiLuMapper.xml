@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.czy.mapper.JiuZhenJiLuMapper">
+
+    <!--resultMap:定义结果集映射-->
+    <resultMap id="jiuzhenMap" type="com.czy.pojo.JiuZhenJiLu" autoMapping="true">
+        <!--关联医生信息-->
+        <association property="doctor" javaType="com.czy.pojo.Doctors" autoMapping="true"/>
+        <!--关联患者信息-->
+        <association property="patient" javaType="com.czy.pojo.Patient" autoMapping="true"/>
+    </resultMap>
+
+    <select id="selectJiuZhenJiLu" resultMap="jiuzhenMap">
+        select jz.*,doc.*,pa.*
+        from consultation jz
+            left join doctors doc on jz.doctor_id = doc.doctor_id
+            left join patients pa on jz.patient_id = pa.patient_id
+        <where>
+            <if test="doctorName!=null">
+                and doc.name like concat('%',#{doctorName},'%')
+            </if>
+            <if test="patientName!=null">
+                and pa.pname like concat('%',#{patientName},'%')
+            </if>
+        </where>
+        order by jz.consultation_id
+    </select>
+
+    <delete id="delById">
+        delete from consultation where consultation_id = #{consultationId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.czy.mapper.DepartmentsMapper">
+
+    <!--查询指定级别科室的信息-->
+    <select id="selectDepartmentsByLevel" resultType="com.czy.pojo.Departments">
+        select * from departments
+        where department_level = #{departmentLevel}
+    </select>
+
+    <!--添加新科室并返回新生成的主键ID
+        添加时方法参数为科室对象因此参数占位符名必须和属性相同
+        keyProperty:表示自增主值返回给实体类中对应的属性名
+        useGeneratedKeys="true":表示是否返回给实体类中对应的属性名
+    -->
+    <insert id="addDepartment" keyProperty="departmentId" useGeneratedKeys="true">
+        insert into departments(department_name,department_pid,department_level,department_description)
+        values(#{departmentName},#{departmentPid},#{departmentLevel},#{departmentDescription})
+    </insert>
+
+    <!--修改指定科室的路径-->
+    <update id="changePath">
+        update departments set department_path=#{departmentPath}
+        where department_id=#{departmentId}
+    </update>
+
+    <!--查询指定编号的科室信息-->
+    <select id="selectById" resultType="com.czy.pojo.Departments">
+        select * from departments
+        where department_id=#{departmentId}
+    </select>
+
+    <select id="AllDepartmentsNames" resultType="com.czy.pojo.Departments">
+        SELECT
+            department_id AS departmentId,
+            department_name AS departmentName
+        FROM departments
+        ORDER BY department_id ASC
+    </select>
+
+</mapper>

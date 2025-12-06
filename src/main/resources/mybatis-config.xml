@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- configuration 配置-->
+<configuration>
+    <!--加载DB连接属性文件-->
+    <properties resource="jdbc.properties"></properties>
+
+    <!--设置打印日志-->
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <!--设置驼峰命名-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <!--增加分页插件 pageHelper5.0 -->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!-- 为KingbaseES配置方言 -->
+            <property name="helperDialect" value="postgresql"/>
+        </plugin>
+    </plugins>
+
+    <!--数据库环境配置-->
+    <environments default="development">
+        <environment id="development">
+            <!--事务管理器-->
+            <transactionManager type="JDBC"/>
+            <!--数据源-->
+            <dataSource type="POOLED">
+                <!--驱动，路径，用户名，密码-->
+                <property name="driver" value="${jdbc.driverClassName}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--配置映射文件-->
+    <mappers>
+        <!--当有多个映射文件，需以包的方式引入映射文件-->
+        <package name="com.czy.mapper"/>
+    </mappers>
+</configuration>

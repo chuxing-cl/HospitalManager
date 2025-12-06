@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czy.mapper.ConsultationMapper">
+    <select id="selectByPatientId" parameterType="int" resultType="com.czy.pojo.Consultation">
+        SELECT consultation_id AS consultationId,
+               patient_id      AS patientId,
+               consultation_time AS consultationTime,
+               medical_advice_case AS medicalAdviceCase,
+               is_hospital_registered AS hospitalized,
+               price AS price
+        FROM consultation
+        WHERE patient_id = #{patientId}
+        ORDER BY consultation_id ASC
+    </select>
+
+    <select id="selectPriceById" parameterType="int" resultType="int">
+        SELECT price FROM consultation
+        WHERE consultation_id = #{consultationId}
+    </select>
+
+    <update id="markPaid" parameterType="int">
+        UPDATE consultation
+        SET is_hospital_registered = 1
+        WHERE consultation_id = #{consultationId}
+    </update>
+</mapper>
+

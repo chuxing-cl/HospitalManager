@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.czy.mapper.DoctorScheduleMapper">
+    <!-- 结果映射：关联医生和科室信息 -->
+    <!-- 只保留一个 resultMap，删除所有多余配置 -->
+    <resultMap id="ScheduleResultMap" type="com.czy.pojo.DoctorSchedule">
+        <id property="scheduleId" column="schedule_id"/>
+        <result property="doctorId" column="doctor_id"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="date" column="date"/>
+        <result property="shiftTime" column="shift_time"/>
+        <!-- 映射简单字符串字段 -->
+        <result property="doctorName" column="doctor_name"/>
+        <result property="deptName" column="dept_name"/>
+    </resultMap>
+
+
+
+    <!-- 1. 修改 findAll 方法的关联条件 -->
+    <select id="findAll" resultMap="ScheduleResultMap">
+        SELECT
+        s.schedule_id,
+        s.doctor_id,
+        s.department_id,
+        s.date,
+        s.shift_time,
+        d.name AS doctor_name,       <!-- 新增：关联医生姓名 -->
+        dept.department_name AS dept_name  <!-- 新增：关联科室名称 -->
+        FROM doctor_schedule s
+        LEFT JOIN doctors d ON s.doctor_id = d.doctor_id  <!-- 新增：关联医生表 -->
+        LEFT JOIN departments dept ON s.department_id = dept.department_id  <!-- 新增：关联科室表 -->
+        WHERE s.schedule_id = #{scheduleId}
+    </select>
+
+    <!-- 2. 修改 findByCondition 方法的关联条件和查询条件 -->
+    <select id="findByCondition" resultMap="ScheduleResultMap">
+        SELECT
+        s.*,
+        d.name AS doctor_name,
+        de.department_name AS dept_name
+        FROM doctor_schedule s
+        LEFT JOIN doctors d ON s.doctor_id = d.doctor_id
+        <!-- 关键修改：s.department_id（对应数据库实际字段） -->
+        LEFT JOIN departments de ON s.department_id = de.department_id
+        <where>
+            <if test="doctorId != null">AND s.doctor_id = #{doctorId}</if>
+            <!-- 关键修改：s.department_id（对应数据库实际字段） -->
+            <if test="deptId != null">AND s.department_id = #{deptId}</if>
+            <if test="date != null">AND s.date = #{date}</if>
+        </where>
+    </select>
+
+    <!-- 新增排班 -->
+    <insert id="add" useGeneratedKeys="true" keyProperty="scheduleId">
+        INSERT INTO doctor_schedule (
+        doctor_id,
+        department_id,  <!-- 改为数据库实际的列名 department_id -->
+        date,
+        shift_time
+        ) VALUES (
+        #{doctorId},
+        #{deptId},      <!-- 这里参数名保持不变，MyBatis 会自动映射实体类字段 -->
+        #{date},
+        #{shiftTime}
+        )
+    </insert>
+
+    <!-- 修改排班 -->
+    <update id="update">
+        UPDATE doctor_schedule
+        SET
+        doctor_id = #{doctorId},
+        department_id = #{deptId},  <!-- 修改此处：将dept_id改为department_id -->
+        date = #{date},
+        shift_time = #{shiftTime}
+        WHERE schedule_id = #{scheduleId}
+    </update>
+    <!-- 删除排班 -->
+    <delete id="delete">
+        DELETE FROM doctor_schedule WHERE schedule_id = #{scheduleId}
+    </delete>
+
+    <!--    <select id="findById" resultMap="ScheduleResultMap">-->
+    <!--        SELECT * FROM doctor_schedule-->
+    <!--        WHERE schedule_id = #{scheduleId}-->
+    <!--    </select>-->
+    <select id="findById" resultMap="ScheduleResultMap">
+        SELECT
+        schedule_id,
+        doctor_id,
+        department_id,  <!-- 或实际列名（如dept_id） -->
+        date,          <!-- 明确包含日期列 -->
+        shift_time
+        FROM doctor_schedule
+        WHERE schedule_id = #{scheduleId}
+    </select>
+
+    <!--    <select id="Edit_findById" resultType="com.czy.pojo.DoctorSchedule">-->
+    <!--        SELECT-->
+    <!--        ds.schedule_id,-->
+    <!--        ds.doctor_id,-->
+    <!--        ds.department_id,-->
+    <!--        ds.date,-->
+    <!--        ds.shift_time,-->
+    <!--        d.name AS doctor_name,-->
+    <!--        de.department_name AS dept_name-->
+    <!--        FROM doctor_schedule ds  &lt;!&ndash; 修正表名：单数形式 &ndash;&gt;-->
+    <!--        LEFT JOIN doctors d ON ds.doctor_id = d.doctor_id-->
+    <!--        LEFT JOIN departments de ON ds.department_id = de.department_id-->
+    <!--        WHERE ds.schedule_id = #{scheduleId}-->
+    <!--    </select>-->
+    <select id="Edit_findById" resultMap="ScheduleResultMap">
+        SELECT
+        s.schedule_id,
+        s.doctor_id,
+        s.department_id,
+        s.date,          <!-- 显式添加日期字段 -->
+        s.shift_time,
+        d.name AS doctor_name,
+        dept.department_name AS dept_name
+        FROM doctor_schedule s
+        LEFT JOIN doctors d ON s.doctor_id = d.doctor_id
+        LEFT JOIN departments dept ON s.department_id = dept.department_id
+        WHERE s.schedule_id = #{schedule_id}
+    </select>
+</mapper>
